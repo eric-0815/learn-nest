@@ -1,22 +1,30 @@
 import { Controller, Delete, Get, Post, Patch } from '@nestjs/common';
-import { Param } from '@nestjs/common/decorators';
+import { Body, HttpCode, Param } from '@nestjs/common/decorators';
 
 @Controller('/events')
 export class EventsController {
   @Get()
-  findAll(@Param('id') id) {
-    return id;
+  findAll() {
+    return [
+      { id: 1, name: '1 event' },
+      { id: 2, name: '2 event' },
+    ];
   }
 
   @Get(':id')
-  findOne() {}
+  findOne(@Param('id') id) {
+    return { id: 1, name: '1 event' };
+  }
 
   @Post()
-  create() {}
+  create(@Body() input) {
+    return input;
+  }
 
   @Patch(':id')
-  update() {}
+  update(@Param('id') id, @Body() input) {}
 
   @Delete(':id')
-  remove() {}
+  @HttpCode(204)
+  remove(@Param('id') id) {}
 }
