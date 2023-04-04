@@ -1,5 +1,5 @@
 import { Event } from './event.entity';
-import { Controller, Delete, Get, Post, Patch, ParseIntPipe, ValidationPipe } from '@nestjs/common';
+import { Controller, Delete, Get, Post, Patch, ValidationPipe } from '@nestjs/common';
 import { Body, HttpCode, Param } from '@nestjs/common/decorators';
 import { CreateEventDto } from './create-event.dto';
 import { UpdateEventDto } from './update-event.dto';
