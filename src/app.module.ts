@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { EventsModule } from './events/events.module';
 import { AppJapanService } from './app.japan.service';
 import { Event } from 'src/events/event.entity';
+import { AppDummy } from './app.dummy';
 
 @Module({
   imports: [
@@ -30,6 +31,12 @@ import { Event } from 'src/events/event.entity';
       provide: 'APP_NAME',
       useValue: 'Nest Events Backend!',
     },
+    {
+      provide: 'MESSAGE',
+      inject: [AppDummy],
+      useFactory: (app) => `${app.dummy()} Factory!`,
+    },
+    AppDummy,
   ],
 })
 export class AppModule { }
