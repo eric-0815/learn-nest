@@ -1,5 +1,5 @@
 import { Event } from './event.entity';
-import { Controller, Delete, Get, Post, Patch } from '@nestjs/common';
+import { Controller, Delete, Get, Post, Patch, ParseIntPipe, ValidationPipe } from '@nestjs/common';
 import { Body, HttpCode, Param } from '@nestjs/common/decorators';
 import { CreateEventDto } from './create-event.dto';
 import { UpdateEventDto } from './update-event.dto';
@@ -12,11 +12,6 @@ export class EventsController {
     @InjectRepository(Event)
     private readonly repository: Repository<Event>
   ) { }
-
-  @Get()
-  async findAll() {
-    return await this.repository.find();
-  }
 
   @Get('/practice')
   async practice() {
@@ -35,6 +30,11 @@ export class EventsController {
     });
   }
 
+  @Get()
+  async findAll() {
+    return await this.repository.find();
+  }
+
 
   @Get(':id')
   async findOne(@Param('id') id) {
@@ -42,7 +42,7 @@ export class EventsController {
   }
 
   @Post()
-  async create(@Body() input: CreateEventDto) {
+  async create(@Body(ValidationPipe) input: CreateEventDto) {
     return await this.repository.save({
       ...input,
       when: new Date(input.when)
