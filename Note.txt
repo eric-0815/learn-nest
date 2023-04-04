@@ -1,2 +1,10 @@
-create a module
+1. create a module
 nest generate module <name>
+
+2. static module vs dynamic module
+
+A static module is a module that is defined at the root of the application and is loaded when the application starts up. These modules are defined using the @Module() decorator and are typically used to configure the core features of the application. For example, the AppModule is a static module that defines the root module of the application and is responsible for configuring the core features of NestJS, such as the HTTP server and the dependency injection container.
+
+A dynamic module, on the other hand, is a module that is loaded dynamically at runtime based on certain conditions. These modules are defined using the @DynamicModule() decorator and are typically used to provide functionality that can be configured at runtime. For example, a module that provides a database connection could be defined as a dynamic module so that the connection details can be provided at runtime based on the environment.
+
+Dynamic modules can be defined using factory functions that return a module object. These factory functions can be used to load modules asynchronously, perform complex initialization, or provide configuration based on runtime conditions.

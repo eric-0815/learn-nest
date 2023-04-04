@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EventsController } from './events/events.controller';
-import { Event } from 'src/events/event.entity';
 import { EventsModule } from './events/events.module';
+import { AppJapanService } from './app.japan.service';
+import { Event } from 'src/events/event.entity';
 
 @Module({
   imports: [
@@ -21,6 +21,15 @@ import { EventsModule } from './events/events.module';
     EventsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: AppService,
+      useClass: AppJapanService,
+    },
+    {
+      provide: 'APP_NAME',
+      useValue: 'Nest Events Backend!',
+    },
+  ],
 })
 export class AppModule { }
