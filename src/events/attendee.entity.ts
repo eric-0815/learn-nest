@@ -7,6 +7,12 @@ import {
 } from 'typeorm';
 import { Event } from './event.entity';
 
+export enum AttendeeAnswerEnum {
+  Accepted = 1,
+  Maybe,
+  Rejected,
+}
+
 @Entity()
 export class Attendee {
   @PrimaryGeneratedColumn()
@@ -16,11 +22,14 @@ export class Attendee {
   name: string;
 
   @ManyToOne(() => Event, (event) => event.attendees, {
-    nullable: false,
+    nullable: true,
   })
   @JoinColumn()
   event: Event;
 
-  // @ManyToOne(() => Event, (event) => event.attendees)
-  // event: Event;
+  @Column('enum', {
+    enum: AttendeeAnswerEnum,
+    default: AttendeeAnswerEnum.Maybe,
+  })
+  answer: AttendeeAnswerEnum;
 }
