@@ -8,3 +8,5 @@ A static module is a module that is defined at the root of the application and i
 A dynamic module, on the other hand, is a module that is loaded dynamically at runtime based on certain conditions. These modules are defined using the @DynamicModule() decorator and are typically used to provide functionality that can be configured at runtime. For example, a module that provides a database connection could be defined as a dynamic module so that the connection details can be provided at runtime based on the environment.
 
 Dynamic modules can be defined using factory functions that return a module object. These factory functions can be used to load modules asynchronously, perform complex initialization, or provide configuration based on runtime conditions.
+
+Some Notes:
