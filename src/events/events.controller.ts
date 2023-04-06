@@ -16,6 +16,7 @@ import { UpdateEventDto } from './update-event.dto';
 import { FindOneOptions, Like, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Attendee } from './attendee.entity';
+import { EventsService } from './events.service';
 
 @Controller('/events')
 export class EventsController {
@@ -26,6 +27,7 @@ export class EventsController {
     private readonly repository: Repository<Event>,
     @InjectRepository(Attendee)
     private readonly attendeeRepository: Repository<Attendee>,
+    private readonly eventsService: EventsService,
   ) { }
 
   @Get()
@@ -84,13 +86,14 @@ export class EventsController {
   async findOne(@Param('id', ParseIntPipe) id: number) {
     this.logger.log(`Hit the findOne route for id: ${id}`);
 
-    const options: FindOneOptions = {
-      where: {
-        id: id,
-      },
-      relations: ['attendees'],
-    };
-    const event = await this.repository.findOne(options);
+    // const options: FindOneOptions = {
+    //   where: {
+    //     id: id,
+    //   },
+    //   relations: ['attendees'],
+    // };
+    // const event = await this.repository.findOne(options);
+    const event = await this.eventsService.getEvent(id);
 
     if (!event) throw new NotFoundException();
 
