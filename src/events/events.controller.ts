@@ -24,6 +24,8 @@ export class EventsController {
   constructor(
     @InjectRepository(Event)
     private readonly repository: Repository<Event>,
+    @InjectRepository(Attendee)
+    private readonly attendeeRepository: Repository<Attendee>,
   ) { }
 
   @Get()
@@ -56,11 +58,26 @@ export class EventsController {
 
   @Get('/practice2')
   async practice2() {
-    const options: FindOneOptions = {
-      where: {},
-      relations: ['attendees'],
-    };
-    return await this.repository.findOne(options);
+    // const options: FindOneOptions = {
+    //   where: {},
+    //   relations: ['attendees'],
+    // };
+    // return await this.repository.findOne(options);
+
+    // const event = await this.repository.findOne({
+    //   where: { id: 1 },
+    // });
+
+    // const event = new Event();
+    // event.id = 1;
+
+    // const attendee = new Attendee();
+    // attendee.name = 'Terry The Second';
+    // attendee.event = event;
+
+    // await this.attendeeRepository.save(attendee);
+
+    // return event;
   }
 
   @Get(':id')
