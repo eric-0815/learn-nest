@@ -6,6 +6,7 @@ import {
   Post,
   Patch,
   ValidationPipe,
+  Logger,
 } from '@nestjs/common';
 import { Body, HttpCode, Param } from '@nestjs/common/decorators';
 import { CreateEventDto } from './create-event.dto';
@@ -15,6 +16,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Controller('/events')
 export class EventsController {
+  private readonly logger = new Logger(EventsController.name);
+
   constructor(
     @InjectRepository(Event)
     private readonly repository: Repository<Event>,
@@ -42,7 +45,10 @@ export class EventsController {
 
   @Get()
   async findAll() {
-    return await this.repository.find();
+    this.logger.log('Hit the findAll route');
+    const events = await this.repository.find();
+    this.logger.debug(`Found ${events.length} events`);
+    return events;
   }
 
   @Get(':id')
