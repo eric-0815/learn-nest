@@ -15,6 +15,7 @@ import { CreateEventDto } from './create-event.dto';
 import { UpdateEventDto } from './update-event.dto';
 import { FindOneOptions, Like, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Attendee } from './attendee.entity';
 
 @Controller('/events')
 export class EventsController {
@@ -33,25 +34,34 @@ export class EventsController {
     return events;
   }
 
-  // @Get('/practice')
-  // async practice() {
-  //   return await this.repository.find({
-  //     select: ['id', 'when'],
-  //     where: [
-  //       {
-  //         id: MoreThan(3), //{ id: 3 },
-  //         when: MoreThan(new Date('2020-12-12T13:00:00')),
-  //       },
-  //       {
-  //         description: Like('%meet%'),
-  //       },
-  //     ],
-  //     take: 2, //limit the number of result,
-  //     order: {
-  //       id: 'ASC',
-  //     },
-  //   });
-  // }
+  @Get('/practice')
+  async practice() {
+    return await this.repository.find({
+      select: ['id', 'when'],
+      where: [
+        {
+          id: MoreThan(3), //{ id: 3 },
+          when: MoreThan(new Date('2020-12-12T13:00:00')),
+        },
+        {
+          description: Like('%meet%'),
+        },
+      ],
+      take: 2, //limit the number of result,
+      order: {
+        id: 'ASC',
+      },
+    });
+  }
+
+  @Get('/practice2')
+  async practice2() {
+    const options: FindOneOptions = {
+      where: {},
+      relations: ['attendees'],
+    };
+    return await this.repository.findOne(options);
+  }
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
@@ -61,6 +71,7 @@ export class EventsController {
       where: {
         id: id,
       },
+      relations: ['attendees'],
     };
     const event = await this.repository.findOne(options);
 
