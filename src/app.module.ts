@@ -8,6 +8,7 @@ import { AppJapanService } from './app.japan.service';
 import { AppDummy } from './app.dummy';
 import ormConfig from './config/orm.config';
 import ormConfigProd from './config/orm.config.prod';
+import { SchoolModule } from './school/school.module';
 
 @Module({
   imports: [
@@ -17,11 +18,13 @@ import ormConfigProd from './config/orm.config.prod';
       load: [ormConfig],
       expandVariables: true,
     }),
+
     TypeOrmModule.forRootAsync({
       useFactory:
         process.env.NODE_ENV !== 'production' ? ormConfig : ormConfigProd,
     }),
     EventsModule,
+    SchoolModule,
   ],
   controllers: [AppController],
   providers: [
