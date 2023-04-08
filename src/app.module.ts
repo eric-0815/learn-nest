@@ -9,6 +9,7 @@ import { AppDummy } from './app.dummy';
 import ormConfig from './config/orm.config';
 import ormConfigProd from './config/orm.config.prod';
 import { SchoolModule } from './school/school.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SchoolModule } from './school/school.module';
     }),
     EventsModule,
     SchoolModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
