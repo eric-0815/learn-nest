@@ -1,23 +1,27 @@
-import { Event } from './event.entity';
 import {
+  Body,
   Controller,
   Delete,
   Get,
-  Post,
-  Patch,
-  ValidationPipe,
+  HttpCode,
   Logger,
   NotFoundException,
+  Param,
   ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
-import { Body, HttpCode, Param, Query } from '@nestjs/common/decorators';
-import { CreateEventDto } from './create-event.dto';
-import { UpdateEventDto } from './update-event.dto';
-import { Like, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Like, MoreThan, Repository } from 'typeorm';
 import { Attendee } from './attendee.entity';
+import { Event } from './event.entity';
 import { EventsService } from './events.service';
+import { CreateEventDto } from './input/create-event.dto';
 import { ListEvents } from './input/list.events';
+import { UpdateEventDto } from './input/update-event.dto';
 
 @Controller('/events')
 export class EventsController {
@@ -32,13 +36,17 @@ export class EventsController {
   ) { }
 
   @Get()
+  @UsePipes(new ValidationPipe({ transform: true }))
   async findAll(@Query() filter: ListEvents) {
-    this.logger.debug(filter);
-    this.logger.log(`Hit the findAll route`);
-    const events = await this.eventsService.getEventsWithAttendeeCountFiltered(
-      filter,
-    );
-    this.logger.debug(`Found ${events.length} events`);
+    const events =
+      await this.eventsService.getEventsWithAttendeeCountFilteredPaginated(
+        filter,
+        {
+          total: true,
+          currentPage: filter.page,
+          limit: 2,
+        },
+      );
     return events;
   }
 
@@ -48,75 +56,85 @@ export class EventsController {
       select: ['id', 'when'],
       where: [
         {
-          id: MoreThan(3), //{ id: 3 },
-          when: MoreThan(new Date('2020-12-12T13:00:00')),
+          id: MoreThan(3),
+          when: MoreThan(new Date('2021-02-12T13:00:00')),
         },
         {
           description: Like('%meet%'),
         },
       ],
-      take: 2, //limit the number of result,
+      take: 2,
       order: {
-        id: 'ASC',
+        id: 'DESC',
       },
     });
   }
 
-  @Get('/practice2')
+  @Get('practice2')
   async practice2() {
-    // const options: FindOneOptions = {
-    //   where: {},
-    //   relations: ['attendees'],
-    // };
-    // return await this.repository.findOne(options);
-
-    // const event = await this.repository.findOne({
-    //   where: { id: 1 },
-    // });
-
-    // const event = new Event();
-    // event.id = 1;
+    // // return await this.repository.findOne(
+    // //   1,
+    // //   { relations: ['attendees'] }
+    // // );
+    // const event = await this.repository.findOne(
+    //   1,
+    //   { relations: ['attendees'] }
+    // );
+    // // const event = new Event();
+    // // event.id = 1;
 
     // const attendee = new Attendee();
-    // attendee.name = 'Terry The Second';
-    // attendee.event = event;
+    // attendee.name = 'Using cascade';
+    // // attendee.event = event;
 
-    // await this.attendeeRepository.save(attendee);
+    // event.attendees.push(attendee);
+    // // event.attendees = [];
+
+    // // await this.attendeeRepository.save(attendee);
+    // await this.repository.save(event);
 
     // return event;
+
+    return await this.repository
+      .createQueryBuilder('e')
+      .select(['e.id', 'e.name'])
+      .orderBy('e.id', 'ASC')
+      .take(3)
+      .getMany();
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    this.logger.log(`Hit the findOne route for id: ${id}`);
-
-    // const options: FindOneOptions = {
-    //   where: {
-    //     id: id,
-    //   },
-    //   relations: ['attendees'],
-    // };
-    // const event = await this.repository.findOne(options);
+    // console.log(typeof id);
     const event = await this.eventsService.getEvent(id);
 
-    if (!event) throw new NotFoundException();
+    if (!event) {
+      throw new NotFoundException();
+    }
 
     return event;
   }
 
+  // You can also use the @UsePipes decorator to enable pipes.
+  // It can be done per method, or for every method when you
+  // add it at the controller level.
   @Post()
-  async create(@Body(ValidationPipe) input: CreateEventDto) {
+  async create(@Body() input: CreateEventDto) {
     return await this.repository.save({
       ...input,
       when: new Date(input.when),
     });
   }
 
+  // Create new ValidationPipe to specify validation group inside @Body
+  // new ValidationPipe({ groups: ['update'] })
   @Patch(':id')
   async update(@Param('id') id, @Body() input: UpdateEventDto) {
     const event = await this.repository.findOne(id);
 
-    if (!event) throw new NotFoundException();
+    if (!event) {
+      throw new NotFoundException();
+    }
 
     return await this.repository.save({
       ...event,
@@ -130,7 +148,9 @@ export class EventsController {
   async remove(@Param('id') id) {
     const event = await this.repository.findOne(id);
 
-    if (!event) throw new NotFoundException();
+    if (!event) {
+      throw new NotFoundException();
+    }
 
     await this.repository.remove(event);
   }
