@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AppJapanService {
@@ -6,7 +6,7 @@ export class AppJapanService {
     @Inject('APP_NAME')
     private readonly name: string,
     @Inject('MESSAGE')
-    private readonly message: string,
+    private readonly message: string
   ) { }
 
   getHello(): string {
